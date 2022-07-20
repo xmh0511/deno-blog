@@ -9,10 +9,10 @@ import { User } from "../model/model.ts";
 
 
 async function genereateKey(): Promise<CryptoKey> {
-	const file = Deno.openSync("./key.conf", { read: true, write: true,create:true });
+	const file = Deno.openSync("./key.conf", { read: true, write: true, create: true });
 	const buff = new Uint8Array(1024);
 	const size = file.readSync(buff);
-	console.log("size: ", size);
+	//console.log("size: ", size);
 	if (size === 0 || size === null) {
 		const secretKey = await crypto.subtle.generateKey(
 			{ name: "HMAC", hash: "SHA-512" },
