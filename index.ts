@@ -7,7 +7,7 @@ import { Utilities, MymiddleWare } from "./utilities/authorization.ts"
 
 
 
-import { User, Article, initDB } from "./dao.ts";
+import { initDB } from "./dao.ts";
 
 import { HomeCtr } from "./controller/home.ts";
 
