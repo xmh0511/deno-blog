@@ -11,6 +11,16 @@
 .search-submit {
     display: none;
 }
+.article-subtitle{
+	text-align: right;
+	color:#d2d2d2;
+}
+.article-subtitle span{
+	margin-right: 10px;
+}
+.article-content{
+	padding-top: 10px;
+}
 
 @media (min-width: 992px) {
     .blog-search {

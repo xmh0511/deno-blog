@@ -41,10 +41,11 @@ HomeCtr.loginPage(router);
 HomeCtr.login(router);
 HomeCtr.add(router);
 HomeCtr.postadd(router);
+HomeCtr.viewArticle(router);
 
 
-router.get("/auth", MymiddleWare.authorized, (ctx) => {
-	ctx.response.body = "ok";
+router.get("/", (ctx) => {
+	ctx.response.redirect("/1");
 })
 
 

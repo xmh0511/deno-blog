@@ -38,11 +38,11 @@ export namespace HomeCtr {
 					//console.log("true")
 					const count = 10;
 					const page = await ctx.params.page;
-					const pageNumber = parseInt(page) >= 1 ? parseInt(page) : 1;
+					const pageNumber = parseInt(page as string) >= 1 ? parseInt(page) : 1;
 					const data = await Utilities.getInfoFromJWT(token as string);
 					const postCount = await Article.where("user_id", data.data.id).select("*").all();
 					const total = await Article.count();
-					console.log(total);
+					//console.log(total);
 					const articles = await Article.select("article_tb.title", "article_tb.id", "article_tb.create_time", "article_tb.update_time", "tag_tb.name as tagName", "user_tb.name as userName").join(Tag, Tag.field("id"), Article.field("tag_id")).join(User, User.field("id"), Article.field("user_id")).offset((pageNumber - 1) * count).limit(count).get();
 					console.log(articles);
 					await ctx.render("home.html", { login: true, data: data, post_count: postCount.length, articles, page, total, format });
@@ -178,6 +178,40 @@ export namespace HomeCtr {
 			} catch (e) {
 				console.log(e);
 				ctx.response.body = { code: 400, msg: "error" };
+			}
+		})
+	}
+
+	export function viewArticle(router: Router<Record<string, any>>) {
+		router.get("/article/:id", async (ctx) => {
+			try {
+				const id = await ctx.params.id;
+				const article = await Article.select("article_tb.id", "article_tb.content", "article_tb.title", "article_tb.create_time", "user_tb.name as userName").join(User, User.field("id"), Article.field("user_id")).where("article_tb.id", id).get() as Model[];
+				console.log(article);
+				if (article.length === 0) {
+					ctx.render("404.html", { code: 404, msg: "文章不存在" });
+					ctx.response.status = 404;
+				} else {
+					const info = article[0];
+					if (info.level === 1) {
+						ctx.render("article.html", { info, format });
+					} else {
+						const cookie = new Cookies(ctx.request, ctx.response);
+						const jwt = await cookie.get("token");
+						const data = await Utilities.getInfoFromJWT(jwt as string);
+						if (data.data?.level < (info.level as number)) {
+							ctx.render("404.html", { code: 404, msg: "没有阅读权限" });
+							ctx.response.status = 404;
+						} else {
+							ctx.render("article.html", {
+								info, format
+							});
+						}
+					}
+				}
+			} catch (e) {
+				ctx.render("404.html", { code: 404, msg: e });
+				ctx.response.status = 500;
 			}
 		})
 	}
