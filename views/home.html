@@ -1,0 +1,232 @@
+﻿<!--
+    
+ @Name：不落阁整站模板源码
+ @Author：Absolutely
+ @Site：http://www.lyblogs.cn
+
+ -->
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
+	<meta http-equiv="Content-Language" content="zh-CN">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<title>不落阁 - 一个.NET程序员的个人博客网站</title>
+	<link rel="shortcut icon" href="/public/images/Logo_40.png" type="image/x-icon">
+	<!--Layui-->
+	<link href="/public/plug/layui/css/layui.css" rel="stylesheet" />
+	<!--font-awesome-->
+	<link href="/public/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+	<!--全局样式表-->
+	<link href="/public/css/global.css" rel="stylesheet" />
+	<!-- 本页样式表 -->
+	<link href="/public/css/home.css" rel="stylesheet" />
+	<script type="text/javascript" src="/public/js/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/public/plug/layui/layui.js"></script>
+	<script type="text/javascript" src="/public/js/login.js"></script>
+</head>
+
+<body>
+	<!-- 导航 -->
+	<!-- 主体（一般只改变这里的内容） -->
+	<div class="blog-body">
+		<!-- canvas -->
+		<canvas id="canvas-banner" style="background: #393D49;"></canvas>
+		<!--为了及时效果需要立即设置canvas宽高，否则就在home.js中设置-->
+		<script type="text/javascript">
+			var canvas = document.getElementById('canvas-banner');
+			canvas.width = window.document.body.clientWidth - 10;//减去滚动条的宽度
+			if (screen.width >= 992) {
+				canvas.height = window.innerHeight * 1 / 3;
+			} else {
+				canvas.height = window.innerHeight * 2 / 7;
+			}
+		</script>
+		<!-- 这个一般才是真正的主体内容 -->
+		<div class="blog-container">
+			<div class="blog-main">
+				<!-- 网站公告提示 -->
+				<div class="home-tips shadow">
+					<i style="float:left;line-height:17px;" class="fa fa-volume-up"></i>
+					<div class="home-tips-container">
+						<span style="color: #009688">偷偷告诉大家，本博客的后台管理也正在制作，为大家准备了游客专用账号！</span>
+						<span style="color: red">网站新增留言回复啦！使用QQ登陆即可回复，人人都可以回复！</span>
+						<span style="color: red">如果你觉得网站做得还不错，来Fly社区点个赞吧！<a href="http://fly.layui.com/case/2017/"
+								target="_blank" style="color:#01AAED">点我前往</a></span>
+						<span style="color: #009688">不落阁 &nbsp;—— &nbsp;一个.NET程序员的个人博客，新版网站采用Layui为前端框架，目前正在建设中！</span>
+					</div>
+				</div>
+				<!--左边文章列表-->
+				<div class="blog-main-left">
+					{% for item in articles %}
+					<div class="article shadow">
+						<div>
+							<a>
+								<p>{{item.title}}</p>
+							</a>
+						</div>
+						<div class="clear"></div>
+						<div class="article-footer">
+							<span><i
+									class="fa fa-clock-o"></i>&nbsp;&nbsp;{{format(item.create_time,"yyyy-MM-dd")}}</span>
+							<span class="article-author"><i class="fa fa-user"></i>&nbsp;&nbsp;{{item.userName}}</span>
+							<span><i class="fa fa-tag"></i>&nbsp;&nbsp;<a href="#">{{item.tagName}}</a></span>
+							<span class="article-viewinfo"><i class="fa fa-eye"></i>&nbsp;0</span>
+							<span class="article-viewinfo"><i class="fa fa-commenting"></i>&nbsp;4</span>
+						</div>
+					</div>
+					{% endfor %}
+					<div id="pagination">
+
+					</div>
+				</div>
+				<!--右边小栏目-->
+				<div class="blog-main-right">
+					{% if login %}
+					<div class="blogerinfo shadow">
+						<div class="blogerinfo-figure">
+							<img src="/public/images/Absolutely.jpg" alt="Absolutely" />
+						</div>
+						<div class="person-box">
+							<div class="person-box-item">
+								<p class="blogerinfo-nickname">{{data.data.name}}</p>
+								<p class="blogerinfo-introduce"><span>等级:</span>{{data.data.level}}</p>
+							</div>
+							<div class="person-box-item">
+								<p class="blogerinfo-nickname"><button
+										class="layui-btn layui-btn-primary layui-border-blue">发帖</button></p>
+								<p><span>帖子:</span>{{post_count}}</p>
+							</div>
+						</div>
+						<hr />
+						<!-- <div class="blogerinfo-contact">
+							<a target="_blank" title="QQ交流" href="javascript:layer.msg('启动QQ会话窗口')"><i
+									class="fa fa-qq fa-2x"></i></a>
+							<a target="_blank" title="给我写信" href="javascript:layer.msg('启动邮我窗口')"><i
+									class="fa fa-envelope fa-2x"></i></a>
+							<a target="_blank" title="新浪微博" href="javascript:layer.msg('转到你的微博主页')"><i
+									class="fa fa-weibo fa-2x"></i></a>
+							<a target="_blank" title="码云" href="javascript:layer.msg('转到你的github主页')"><i
+									class="fa fa-git fa-2x"></i></a>
+						</div> -->
+					</div>
+					{% else %}
+					<div class="blogerinfo shadow">
+						<div class="blogerinfo-figure">
+							<button type="button" class="layui-btn layui-btn-normal" onclick="toLogin()">登录</button>
+						</div>
+					</div>
+					{% endif %}
+					<div></div>
+					<!--占位-->
+					<div class="blog-module shadow">
+						<div class="blog-module-title">热文排行</div>
+						<ul class="fa-ul blog-module-ul">
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">Web安全之跨站请求伪造CSRF</a></li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">ASP.NET MVC
+									防范跨站请求伪造（CSRF）</a></li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">常用正则表达式</a></li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">EF CodeFirst数据迁移常用指令</a>
+							</li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">浅谈.NET Framework基元类型</a>
+							</li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">C#基础知识回顾-扩展方法</a></li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">一步步制作时光轴（一）（HTML篇）</a>
+							</li>
+							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">一步步制作时光轴（二）（CSS篇）</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+	<div class="mask-dialog">
+		<div class="login-wrapper-box layui-anim layui-anim-scale layui-hide">
+			<form class="layui-form">
+				<!--        <h2>FS 文件管理用户登录</h2>-->
+				<h2>用户登录</h2>
+				<div class="layui-form-item layui-input-icon-group">
+					<i class="layui-icon layui-icon-username"></i>
+					<input class="layui-input" id="email" name="nickName" placeholder="用户名" autocomplete="off"
+						lay-verType="tips" lay-verify="required" required />
+				</div>
+				<div class="layui-form-item layui-input-icon-group">
+					<i class="layui-icon layui-icon-password"></i>
+					<input class="layui-input" name="password" placeholder="请输入登录密码" type="password" lay-verType="tips"
+						lay-verify="required" required />
+				</div>
+				<div class="layui-form-item">
+					<input type="checkbox" name="remember" title="记住我" lay-skin="primary">
+					<a href="/register" class="layui-link pull-right">注册账号</a>
+				</div>
+				<div class="layui-form-item login-button-box">
+					<button class="layui-btn layui-btn-fluid" lay-filter="loginSubmit" lay-submit>登录</button>
+					<button class="layui-btn layui-btn-fluid layui-btn-primary" onclick="cancelBox()">取消</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 底部 -->
+	<footer class="blog-footer">
+		<p><span>Copyright</span><span>&copy;</span><span>2022</span><a href="/">不落阁</a><span>Design
+				By Deno</span></p>
+	</footer>
+	<!--侧边导航-->
+	<ul class="layui-nav layui-nav-tree layui-nav-side blog-nav-left layui-hide" lay-filter="nav">
+		<li class="layui-nav-item layui-this">
+			<a href="home.html"><i class="fa fa-home fa-fw"></i>&nbsp;网站首页</a>
+		</li>
+	</ul>
+	<!--分享窗体-->
+	<div class="blog-share layui-hide">
+		<div class="blog-share-body">
+			<div style="width: 200px;height:100%;">
+				<div class="bdsharebuttonbox">
+					<a class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+					<a class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+					<a class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+					<a class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--遮罩-->
+	<div class="blog-mask animated layui-hide"></div>
+	<!-- layui.js -->
+	<script src="/public/plug/layui/layui.js"></script>
+	<!-- 全局脚本 -->
+	<script src="/public/js/global.js"></script>
+	<!-- 本页脚本 -->
+	<script src="/public/js/home.js"></script>
+</body>
+<script>
+	function toLogin() {
+		$(".login-wrapper-box").removeClass("layui-hide");
+	}
+	function cancelBox() {
+		$(".login-wrapper-box").addClass("layui-hide");
+	}
+</script>
+<script>
+	layui.use('laypage', function () {
+		var laypage = layui.laypage;
+
+		//执行一个laypage实例
+		laypage.render({
+			elem: 'pagination', //注意，这里的 test1 是 ID，不用加 # 号
+			count: `{{ total }}`, //数据总数，从服务端得到
+			limit: 10,
+			jump: function (obj, first) {
+				if (!first) {
+					window.location.href = `/${obj.curr}`;
+				}
+			}
+		});
+	});
+</script>
+
+</html>
