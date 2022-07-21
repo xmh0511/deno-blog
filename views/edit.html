@@ -22,7 +22,8 @@
 						<select name="tag" id="selectTag">
 							<option value="">标签</option>
 							{% for item in tags %}
-							<option value="{{item.id}}">{{item.name}}</option>
+							<option {% if equal(item.id,article.tag_id) %} selected {% endif %} value="{{item.id}}">
+								{{item.name}}</option>
 							{% endfor %}
 						</select>
 					</div>
@@ -32,14 +33,15 @@
 						<select name="tag" id="selectLevel">
 							<option value="">阅读权限</option>
 							{% for item in levels %}
-							<option value="{{item.level}}">{{item.name}}</option>
+							<option {% if equal(item.level,article.level) %} selected {% endif %}
+								value="{{item.level}}">{{item.name}}</option>
 							{% endfor %}
 						</select>
 					</div>
 				</div>
 				<div class="article-title-container">
-					<input id="articleTitle" type="text" name="title" required lay-verify="required" placeholder="请输入标题"
-						autocomplete="off" class="layui-input">
+					<input value="{{article.title}}" id="articleTitle" type="text" name="title" required
+						lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
 				</div>
 			</div>
 			<div>
@@ -55,6 +57,7 @@
 <script type="text/javascript">
 	console.log(ice)
 	const instance = ice.editor("content", function () {
+		this.setValue(`{{article.content | safe }}`);
 		this.uploadUrl = "/upload";
 		this.width = "90%";
 		this.height = '100%'; //高度
@@ -75,7 +78,7 @@
 				return;
 			}
 			layer.load(2);
-			$.post("/add", { tag, title, content, level }, function (r) {
+			$.post("/edit", { tag, title, content, level, id: `{{article.id}}` }, function (r) {
 				if (r.code === 200) {
 					layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
 						location.replace('/');

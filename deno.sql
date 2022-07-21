@@ -11,7 +11,7 @@
  Target Server Version : 50730
  File Encoding         : 65001
 
- Date: 20/07/2022 16:41:02
+ Date: 21/07/2022 17:54:41
 */
 
 SET NAMES utf8mb4;
@@ -31,14 +31,36 @@ CREATE TABLE `article_tb` (
   `level` int(255) DEFAULT NULL,
   `tag_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of article_tb
 -- ----------------------------
 BEGIN;
 INSERT INTO `article_tb` VALUES (1, 20, '2022-07-20 09:18:05', '2022-07-20 09:18:05', '<p>ddfdfdsfdf</p>', '11233', 1, 1);
-INSERT INTO `article_tb` VALUES (2, 20, '2022-07-20 10:55:48', '2022-07-20 10:55:48', '<p><span style=\"background-color: rgb(221, 217, 195); color: rgb(0, 176, 240);\">dfdfdfdfdf (^_^)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (*&gt;﹏&lt;*)  (*&gt;﹏&lt;*)  (*&gt;﹏&lt;*) </span></p>', '1123', 1, 1);
+INSERT INTO `article_tb` VALUES (2, 20, '2022-07-20 10:55:48', '2022-07-21 15:52:39', '<p><span style=\"background-color: rgb(221, 217, 195); color: rgb(0, 176, 240);\">dfdfdfdfdf (^_^)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (&gt;_&lt;)  (*&gt;﹏&lt;*)  (*&gt;﹏&lt;*)  (*&gt;﹏&lt;*) </span></p><p><span style=\"background-color: rgb(221, 217, 195); color: rgb(0, 176, 240);\"><br></span></p><p>2323213123</p><p><img src=\"/public/upload/806028d442c89ec1f8d8fbfb9a372b0abecd6539.jpeg\" width=\"50\" height=\"100\"><br></p>', '1123', 1, 2);
+COMMIT;
+
+-- ----------------------------
+-- Table structure for comment_tb
+-- ----------------------------
+DROP TABLE IF EXISTS `comment_tb`;
+CREATE TABLE `comment_tb` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `article_id` int(11) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `comment` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of comment_tb
+-- ----------------------------
+BEGIN;
+INSERT INTO `comment_tb` VALUES (1, 20, 1, '2022-07-21 17:16:22', '2022-07-21 17:16:22', '<p>2323213131</p>');
+INSERT INTO `comment_tb` VALUES (3, 20, 1, '2022-07-21 17:54:13', '2022-07-21 17:54:13', '<p>just a comment.</p>');
 COMMIT;
 
 -- ----------------------------

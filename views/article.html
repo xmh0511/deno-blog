@@ -24,6 +24,8 @@
 	<link href="/public/css/global.css" rel="stylesheet" />
 	<!--本页样式表-->
 	<link href="/public/css/article.css" rel="stylesheet" />
+	<script type="text/javascript" src="/public/js/iceEditor.js"></script>
+	<script type="text/javascript" src="/public/js/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -56,8 +58,11 @@
 							<h3>{{info.title}}</h3>
 						</div>
 						<div class="article-subtitle">
-							<span>{{format(info.create_time,"yyyy-MM-dd")}}</span>
-							<span>作者:</span>
+							<span><i
+									class="layui-icon layui-icon-file-b"></i>{{format(info.create_time,"yyyy-MM-dd")}}</span>
+							<span><i
+									class="layui-icon layui-icon-edit"></i>{{format(info.update_time,"yyyy-MM-dd")}}</span>
+							<span><i class="layui-icon layui-icon-username"></i>作者:</span>
 							<span>{{info.userName}}</span>
 						</div>
 						<hr />
@@ -66,6 +71,46 @@
 
 				</div>
 				<div class="clear"></div>
+				<div class="comment-list">
+					{% for item in comments %}
+					<div class="comment-item">
+						<div class="avator">
+							<div><img src="/public/images/Absolutely.jpg" /></div>
+							<div>
+								<div class="avator-item">
+									<span><i class="layui-icon layui-icon-username"></i>用户名:</span>
+									<span>{{item.userName}}</span>
+								</div>
+								<div class="avator-item">
+									<span><i class="layui-icon layui-icon-diamond"></i>等级:</span>
+									<span>{{item.level}}</span>
+								</div>
+							</div>
+						</div>
+						<div class="comment-content">
+							<div class="comment-inner-content">
+								<div class="comment-container">
+									{{ item.comment | safe}}
+								</div>
+								<div class="comment-bar">
+									{% if equal(item.user_id, currentId) %}
+									<div>
+										<span class="deleteComment" data-id="{{item.id}}"><i
+												class="layui-icon layui-icon-delete"></i>删除</span>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div class="commentPoster">
+					<div id="comment"></div>
+					<div class="post-button">
+						<button class="layui-btn postButton">提交</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -113,5 +158,65 @@
 	<!-- 全局脚本 -->
 	<script src="/public/js/global.js"></script>
 </body>
+<script>
+	const instance = ice.editor("comment", function () {
+		this.uploadUrl = "/upload";
+		this.width = "99%";
+		this.height = '150px'; //高度
+		this.maxWindow = false;
+		this.create();
+	});
+	layui.use('laypage', function () {
+		var laypage = layui.laypage;
+		var layer = layui.layer;
+
+		$(".postButton").off("click").on("click", function () {
+			console.log("11111")
+			var that = this;
+			let id = `{{info.id}}`
+			let comment = instance.getValue();
+			layer.confirm('确定提交吗?', {
+				btn: ['确定', '取消'] //可以无限个按钮
+			}, function (index, layero) {
+				layer.load(2);
+				$.post(`/comment/${id}`, { comment }, function (r) {
+					if (r.code === 200) {
+						layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
+							window.location.reload();
+						})
+					} else {
+						layer.closeAll('loading');
+						layer.msg(r.msg, { icon: 5 });
+					}
+				})
+			}, function (index) {
+				//按钮【按钮二】的回调
+			});
+		})
+
+
+		$(".deleteComment").off("click").on("click", function () {
+			var that = this;
+			let id = $(this).attr("data-id");
+			layer.confirm('确定提交吗?', {
+				btn: ['确定', '取消'] //可以无限个按钮
+			}, function (index, layero) {
+				layer.load(2);
+				$.post(`/delcomment/${id}`, { id }, function (r) {
+					if (r.code === 200) {
+						layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
+							window.location.reload();
+						})
+					} else {
+						layer.closeAll('loading');
+						layer.msg(r.msg, { icon: 5 });
+					}
+				})
+			}, function (index) {
+				//按钮【按钮二】的回调
+			});
+		})
+	})
+</script>
 
 </html>

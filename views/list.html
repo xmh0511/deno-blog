@@ -74,6 +74,10 @@
 									class="fa fa-clock-o"></i>&nbsp;&nbsp;{{format(item.create_time,"yyyy-MM-dd")}}</span>
 							<span class="article-author"><i class="fa fa-user"></i>&nbsp;&nbsp;{{item.userName}}</span>
 							<span><i class="fa fa-tag"></i>&nbsp;&nbsp;<a href="#">{{item.tagName}}</a></span>
+							<span><i class="layui-icon layui-icon-edit"></i>&nbsp;&nbsp;<a
+									href="/edit/{{item.id}}">编辑</a></span>
+							<span class="deleteButton" data-id="{{item.id}}"><i
+									class="layui-icon layui-icon-delete"></i>&nbsp;&nbsp;删除</span>
 							<span class="article-viewinfo"><i class="fa fa-eye"></i>&nbsp;0</span>
 							<span class="article-viewinfo"><i class="fa fa-commenting"></i>&nbsp;4</span>
 						</div>
@@ -97,7 +101,7 @@
 							</div>
 							<div class="person-box-item">
 								<p class="blogerinfo-nickname"><a href="/add"><button
-										class="layui-btn layui-btn-primary layui-border-blue">发帖</button></a></p>
+											class="layui-btn layui-btn-primary layui-border-blue">发帖</button></a></p>
 								<p><a href="/list/1"><span>帖子:</span>{{post_count}}</a></p>
 							</div>
 						</div>
@@ -214,7 +218,7 @@
 <script>
 	layui.use('laypage', function () {
 		var laypage = layui.laypage;
-
+		var layer = layui.layer;
 		//执行一个laypage实例
 		laypage.render({
 			elem: 'pagination', //注意，这里的 test1 是 ID，不用加 # 号
@@ -226,7 +230,33 @@
 				}
 			}
 		});
+
+		$(".deleteButton").off("click").on("click", function () {
+			var that = this;
+			let id = $(this).attr("data-id");
+			layer.confirm('确定删除吗?', {
+				btn: ['确定', '取消'] //可以无限个按钮
+			}, function (index, layero) {
+				layer.load(2);
+				$.post(`/delete/${id}`, { id }, function (r) {
+					if (r.code === 200) {
+						layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
+							window.location.reload();
+						})
+					} else {
+						layer.closeAll('loading');
+						layer.msg(r.msg, { icon: 5 });
+					}
+				})
+			}, function (index) {
+				//按钮【按钮二】的回调
+			});
+		})
 	});
 </script>
-
+<style>
+	.deleteButton{
+		cursor: pointer;
+	}
+</style>
 </html>

@@ -3,8 +3,6 @@ import { Model, DataTypes } from "https://raw.githubusercontent.com/xmh0511/deno
 class User extends Model {
 	static table = 'user_tb';
 
-	static timestamps = true;
-
 	static fields = {
 		id: {
 			primaryKey: true,
@@ -35,7 +33,6 @@ class User extends Model {
 class Article extends Model {
 	static table = 'article_tb';
 
-	static timestamps = true;
 
 	static fields = {
 		id: {
@@ -63,7 +60,6 @@ class Article extends Model {
 class Tag extends Model {
 	static table = 'tag_tb';
 
-	static timestamps = true;
 
 	static fields = {
 		id: {
@@ -100,4 +96,32 @@ class Level extends Model {
 	};
 }
 
-export { User, Article, Tag, Level };
+class Comment extends Model {
+	static table = 'comment_tb';
+
+
+	static fields = {
+		id: {
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		create_time: {
+			type: DataTypes.DATETIME
+		},
+		update_time: {
+			type: DataTypes.DATETIME
+		},
+		comment: {
+			type: DataTypes.STRING
+		},
+		user_id: {
+			type: DataTypes.INTEGER
+		},
+		article_id: {
+			type: DataTypes.INTEGER
+		},
+	};
+
+}
+
+export { User, Article, Tag, Level,Comment };
