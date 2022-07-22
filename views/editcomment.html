@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<base href="{{baseUrl}}" />
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>发帖</title>
+	<link rel="stylesheet" href="./public/plug/layui/css/layui.css">
+	<script type="text/javascript" src="./public/js/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="./public/plug/layui/layui.js"></script>
+	<script type="text/javascript" src="./public/js/iceEditor.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<div>
+			<div id="content"></div>
+		</div>
+		<div class="post-button">
+			<button id="postButton" type="button" class="layui-btn">提交</button>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="./public/js/clipboard.min.js"></script>
+<script type="text/javascript">
+	const instance = ice.editor("content", function () {
+		this.setValue(`{{info.comment | safe }}`);
+		this.uploadUrl = "./upload";
+		this.width = "100%";
+		this.height = '80%'; //高度
+		this.maxWindow = false;
+		$(this.drag).remove();
+		this.create();
+	});
+	layui.use('layer', function () {
+		var layer = layui.layer;
+
+		$("#postButton").off("click").on("click", function () {
+			console.log("eee");
+			const content = instance.getValue();
+			if (content === "") {
+				layer.msg('内容为空');
+				return;
+			}
+			layer.load(2);
+			$.post("./editcomment/{{info.id}}", { comment: content }, function (r) {
+				if (r.code === 200) {
+					layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
+						window.parent.requestRefresh();
+					})
+				} else {
+					layer.closeAll('loading');
+					layer.msg(r.msg, { icon: 5 });
+				}
+			}, "JSON");
+		})
+	});
+</script>
+<style>
+	body {
+		width: 100%;
+	}
+
+	.container {
+		height: 306px;
+		background-color: rgba(0, 0, 0, .2);
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.post-button {
+		flex: 1;
+	}
+</style>
+
+</html>

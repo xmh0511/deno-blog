@@ -54,9 +54,17 @@ HomeCtr.postEdit(router);
 HomeCtr.deleteArticle(router);
 HomeCtr.postComment(router);
 HomeCtr.delComment(router);
+HomeCtr.commentedit(router);
+HomeCtr.postCommentEdit(router);
+HomeCtr.personEdit(router);
+HomeCtr.saveAvatar(router);
 
 
 router.get("/", (ctx) => {
+	ctx.response.redirect("/home/1");
+})
+
+router.get("/home", (ctx) => {
 	ctx.response.redirect("/home/1");
 })
 
@@ -64,6 +72,8 @@ router.get("/list", (ctx) => {
 	ctx.response.redirect("/list/1");
 })
 
+
+const baseUrl = "/";
 
 router.post("/upload", MymiddleWare.authorized, async (ctx) => {
 	try {
@@ -79,7 +89,7 @@ router.post("/upload", MymiddleWare.authorized, async (ctx) => {
 					const filepath = file.filename as string;
 					const filename = basename(filepath);
 					await move(file.filename as string, `${Deno.cwd()}/public/upload/${filename}`);
-					res.push({ error: 0, url: `/public/upload/${filename}`, name: filename });
+					res.push({ error: 0, url: `${baseUrl}./public/upload/${filename}`, name: filename });
 				} else {
 					ctx.response.body = { error: "无效请求" };
 					break;

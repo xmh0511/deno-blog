@@ -11,6 +11,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
+	<base href="{{baseUrl}}"/>
 	<meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
 	<meta http-equiv="Content-Language" content="zh-CN">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -33,9 +34,6 @@
 	<nav class="blog-nav layui-header">
 		<div class="blog-container">
 			<!-- QQ互联登陆 -->
-			<a href="javascript:;" class="blog-user layui-hide">
-				<img src="/public/images/Absolutely.jpg" alt="Absolutely" title="Absolutely" />
-			</a>
 			<!-- 不落阁 -->
 			<a class="blog-logo" href="/">不落阁</a>
 			<!-- 导航菜单 -->
@@ -75,7 +73,11 @@
 					{% for item in comments %}
 					<div class="comment-item">
 						<div class="avator">
-							<div><img src="/public/images/Absolutely.jpg" /></div>
+							{% if emptyString(item.avatar) %}
+							<div><img src="./public/images/Absolutely.jpg" /></div>
+							{% else %}
+							<div><img src="{{item.avatar}}" /></div>
+							{% endif %}
 							<div>
 								<div class="avator-item">
 									<span><i class="layui-icon layui-icon-username"></i>用户名:</span>
@@ -94,11 +96,21 @@
 								</div>
 								<div class="comment-bar">
 									{% if equal(item.user_id, currentId) %}
-									<div>
+									<div class="comment-bar-item">
 										<span class="deleteComment" data-id="{{item.id}}"><i
 												class="layui-icon layui-icon-delete"></i>删除</span>
 									</div>
 									{% endif %}
+									{% if equal(item.user_id, currentId) %}
+									<div class="comment-bar-item">
+										<span class="editComment" data-id="{{item.id}}"><i
+												class="layui-icon layui-icon-edit"></i>编辑</span>
+									</div>
+									{% endif %}
+									<div class="">
+										<span>修改时间:</span>
+										<span>{{format(item.update_time,"yyyy-MM-dd")}}</span>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -164,6 +176,8 @@
 		this.width = "99%";
 		this.height = '150px'; //高度
 		this.maxWindow = false;
+		//console.log(this.drag)
+		$(this.drag).remove();
 		this.create();
 	});
 	layui.use('laypage', function () {
@@ -216,7 +230,24 @@
 				//按钮【按钮二】的回调
 			});
 		})
+
+		$(".editComment").off("click").on("click", function () {
+			const id = $(this).attr("data-id");
+			layer.open({
+				type: 2,
+				area: ['600px', '330px'],
+				content: [`/commentedit/${id}`, 'no'], //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+				success: function (layero, index) {
+					var iframeWin = window[layero.find('iframe')[0]['name']];
+					console.log(iframeWin);
+				}
+			});
+		});
 	})
+
+	window.requestRefresh = function () {
+		window.location.reload();
+	}
 </script>
 
 </html>

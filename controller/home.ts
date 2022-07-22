@@ -1,15 +1,34 @@
 // deno-lint-ignore-file
 import { Message } from "https://deno.land/std@0.104.0/hash/hasher.ts";
-import { BodyForm, Cookies, Router } from "https://deno.land/x/oak/mod.ts";
+import {
+	BodyForm,
+	BodyFormData,
+	Cookies,
+	Router,
+} from "https://deno.land/x/oak/mod.ts";
 
 import { Md5 } from "https://raw.githubusercontent.com/denoland/deno_std/main/hash/md5.ts";
 
 import { MymiddleWare, Utilities } from "../utilities/authorization.ts";
 
-import { Article, Comment, Level, Tag, User } from "../model/model.ts";
+import {
+	Article,
+	Comment,
+	Level,
+	ReadCount,
+	Tag,
+	User,
+} from "../model/model.ts";
 import { Model } from "https://raw.githubusercontent.com/xmh0511/denodb/master/mod.ts";
 
 import { format } from "https://deno.land/std@0.148.0/datetime/mod.ts";
+
+import { Dao, Database } from "../dao.ts";
+import { FieldValue } from "https://raw.githubusercontent.com/xmh0511/denodb/master/lib/data-types.ts";
+
+import { MySQLClient } from "https://raw.githubusercontent.com/xmh0511/denodb/master/deps.ts";
+
+const baseUrl = "/";
 
 async function userHasExist(
 	name: string,
@@ -27,8 +46,45 @@ async function userHasExist(
 	}
 }
 
+async function getHotestArticles(): Promise<any[]> {
+	const client = (Dao as Database).getClient() as MySQLClient;
+	const r = await client.query(`SELECT
+	T.title , T.id , T.Counts
+FROM
+	(
+	SELECT
+		a.id,
+		a.title,
+		COUNT( c.id ) AS Counts 
+	FROM
+		article_tb a
+		LEFT JOIN comment_tb c ON a.id = c.article_id 
+	GROUP BY
+		a.id 
+	) AS T 
+ORDER BY 
+	T.Counts DESC LIMIT 8;`);
+	return r;
+}
+
+async function addViewCount(ip: string, id: number): Promise<boolean> {
+	const info = await ReadCount.where({ "article_id": id, ip }).get();
+	if (info.length === 0) {
+		const viewCount = new ReadCount();
+		viewCount.article_id = id;
+		viewCount.create_time = new Date();
+		viewCount.ip = ip;
+		await viewCount.save();
+		return true;
+	}
+	return true;
+}
+
 export namespace HomeCtr {
 	export function index(router: Router<Record<string, any>>) {
+		const emptyString = (a: string) => {
+			return a === "";
+		}
 		router.get("/home/:page", async (ctx) => {
 			try {
 				const cookie = new Cookies(ctx.request, ctx.response);
@@ -38,25 +94,41 @@ export namespace HomeCtr {
 				const page = await ctx.params.page;
 				const pageNumber = parseInt(page as string) >= 1 ? parseInt(page) : 1;
 				const total = await Article.count();
-				const articles = await Article.select(
+				let articles = await Article.select(
 					"article_tb.title",
 					"article_tb.id",
 					"article_tb.create_time",
 					"article_tb.update_time",
 					"tag_tb.name as tagName",
 					"user_tb.name as userName",
+					"article_tb.article_state",
 				).join(Tag, Tag.field("id"), Article.field("tag_id")).join(
 					User,
 					User.field("id"),
 					Article.field("user_id"),
-				).offset((pageNumber - 1) * count).limit(count).get();
+				).where("article_state", "1").orderBy("update_time").offset(
+					(pageNumber - 1) * count,
+				).limit(count).get() as Model[];
+				for (const item of articles) {
+					const id = item.id;
+					const count = await Comment.where("article_id", id as FieldValue)
+						.count();
+					const views = await ReadCount.where("article_id", id as FieldValue)
+						.count();
+					item.commentCount = count;
+					item.read_count = views;
+				}
 				//console.log(articles);
+				const hotArticles = await getHotestArticles();
+				//console.log(hotArticles);
 				if (token !== null && token !== undefined && token !== "") {
 					//console.log("true");
 					const data = await Utilities.getInfoFromJWT(token as string);
 					const postCount = await Article.where("user_id", data.data.id).select(
 						"*",
 					).all();
+					const userInfo = await User.where({ id: data.data.id }).get() as Model[];
+					articles = articles.reverse();
 					await ctx.render("home.html", {
 						login: true,
 						data: data,
@@ -65,6 +137,10 @@ export namespace HomeCtr {
 						page,
 						total,
 						format,
+						baseUrl,
+						hotArticles,
+						avatar: userInfo[0].avatar,
+						emptyString
 					});
 				} else {
 					//console.log("abc");
@@ -74,24 +150,26 @@ export namespace HomeCtr {
 						page,
 						total,
 						format,
+						baseUrl,
+						hotArticles,
 					});
 				}
 			} catch (e) {
-				//console.log(e);
-				await ctx.render("home.html", { login: false });
+				console.log(e);
+				await ctx.render("home.html", { login: false, baseUrl });
 			}
 		});
 	}
 
 	export function register(router: Router<Record<string, any>>) {
 		router.get("/register", async (ctx) => {
-			await ctx.render("reg.html");
+			await ctx.render("reg.html", { baseUrl });
 		});
 	}
 
 	export function loginPage(router: Router<Record<string, any>>) {
 		router.get("/login", async (ctx) => {
-			await ctx.render("login.html");
+			await ctx.render("login.html", { baseUrl });
 		});
 	}
 
@@ -117,7 +195,12 @@ export namespace HomeCtr {
 								id: data?.id,
 								level: data?.privilege,
 							});
-							ctx.response.body = { code: 200, msg: "登录成功", token: jwt };
+							ctx.response.body = {
+								code: 200,
+								msg: "登录成功",
+								token: jwt,
+								baseUrl,
+							};
 						} else {
 							ctx.response.body = { code: 400, msg: "用户名或密码错误" };
 						}
@@ -157,7 +240,7 @@ export namespace HomeCtr {
 							id: r.lastInsertId,
 							level: r.privilege,
 						});
-						ctx.response.body = { code: 200, msg: "注册成功", token: jwt };
+						ctx.response.body = { code: 200, msg: "注册成功", token: jwt, baseUrl };
 					} else {
 						ctx.response.body = { code: 404, msg: "该用户名已注册" };
 					}
@@ -177,7 +260,7 @@ export namespace HomeCtr {
 			try {
 				const tags = await Tag.select("*").all();
 				const levels = await Level.select("*").all();
-				await ctx.render("add.html", { tags, levels });
+				await ctx.render("add.html", { tags, levels, baseUrl });
 			} catch (e) {
 				//console.log(e);
 			}
@@ -225,8 +308,11 @@ export namespace HomeCtr {
 	export function viewArticle(router: Router<Record<string, any>>) {
 		router.get("/article/:id", async (ctx) => {
 			const equal = (a: number, b: number) => {
-				console.log(a, b)
+				//console.log(a, b);
 				return a === b;
+			};
+			const emptyString = (a: string) => {
+				return a === "";
 			}
 			try {
 				const id = await ctx.params.id;
@@ -251,7 +337,11 @@ export namespace HomeCtr {
 					"comment_tb.create_time",
 					"user_tb.name as userName",
 					"user_tb.privilege as level",
-				).join(User, Comment.field("user_id"), User.field("id")).where("article_id", id).get();
+					"user_tb.avatar as avatar"
+				).join(User, Comment.field("user_id"), User.field("id")).where(
+					"article_id",
+					id,
+				).get();
 				let currentData = { data: { id: -1, level: -1 } };
 				try {
 					const cookie = new Cookies(ctx.request, ctx.response);
@@ -264,35 +354,42 @@ export namespace HomeCtr {
 				//console.log(currentData);
 				//console.log("262 line");
 				if (article.length === 0) {
-					ctx.render("404.html", { code: 404, msg: "文章不存在" });
+					ctx.render("404.html", { code: 404, msg: "文章不存在", baseUrl });
 					ctx.response.status = 404;
 				} else {
 					const info = article[0];
-					console.log("line 270 ", info.level)
 					if (info.level === 1) {
-						console.log("270 line")
-						ctx.render("article.html", { info, format, comments, equal, currentId: currentData.data?.id });
+						await addViewCount(ctx.request.ip, info.id as number);
+						ctx.render("article.html", {
+							info,
+							format,
+							comments,
+							equal,
+							currentId: currentData.data?.id,
+							baseUrl,
+							emptyString
+						});
 					} else {
-						// const cookie = new Cookies(ctx.request, ctx.response);
-						// const jwt = await cookie.get("token");
-						// const data = await Utilities.getInfoFromJWT(jwt as string);
 						if (currentData.data?.level < (info.level as number)) {
-							ctx.render("404.html", { code: 404, msg: "没有阅读权限" });
+							ctx.render("404.html", { code: 404, msg: "没有阅读权限", baseUrl });
 							ctx.response.status = 404;
 						} else {
+							await addViewCount(ctx.request.ip, info.id as number);
 							ctx.render("article.html", {
 								info,
 								format,
 								comments,
 								equal,
-								currentId: currentData.data?.id
+								currentId: currentData.data?.id,
+								baseUrl,
+								emptyString
 							});
 						}
 					}
 				}
 			} catch (e) {
 				console.log("line 292 ", e);
-				ctx.render("404.html", { code: 404, msg: e });
+				ctx.render("404.html", { code: 404, msg: e, baseUrl });
 				ctx.response.status = 500;
 			}
 		});
@@ -300,6 +397,9 @@ export namespace HomeCtr {
 
 	export function articleList(router: Router<Record<string, any>>) {
 		router.get("/list/:page", MymiddleWare.authorized, async (ctx) => {
+			const emptyString = (a: string) => {
+				return a === "";
+			}
 			try {
 				const user = ctx.state.userData.data;
 				const count = 10;
@@ -311,12 +411,25 @@ export namespace HomeCtr {
 					"article_tb.title",
 					"article_tb.create_time",
 					"tag_tb.name as tagName",
+					"article_tb.article_state",
 				).join(Tag, Tag.field("id"), Article.field("tag_id")).where(
 					"user_id",
 					user.id,
-				).offset((page - 1) * count).limit(count).get();
+				).offset((page - 1) * count).limit(count).get() as Model[];
+				for (const item of articles) {
+					const count = await Comment.where("article_id", item.id as FieldValue)
+						.count();
+					const views = await ReadCount.where(
+						"article_id",
+						item.id as FieldValue,
+					).count();
+					item.commentCount = count;
+					item.read_count = views;
+				}
 				const total = await Article.where("user_id", user.id).count();
+				const hotArticles = await getHotestArticles();
 				//console.log(articles);
+				const userInfo = await User.where({ "id": user.id, }).get() as Model[];
 				await ctx.render("list.html", {
 					login: true,
 					data: ctx.state.userData,
@@ -325,9 +438,13 @@ export namespace HomeCtr {
 					page,
 					total,
 					format,
+					baseUrl,
+					hotArticles,
+					avatar: userInfo[0].avatar,
+					emptyString
 				});
 			} catch (e) {
-				await ctx.render("404.html", { code: 404, msg: e });
+				await ctx.render("404.html", { code: 404, msg: e, baseUrl });
 			}
 		});
 	}
@@ -349,13 +466,19 @@ export namespace HomeCtr {
 				const levels = await Level.select("*").get();
 				//console.log(article);
 				if (article.length > 0) {
-					ctx.render("edit.html", { article: article[0], tags, levels, equal });
+					ctx.render("edit.html", {
+						article: article[0],
+						tags,
+						levels,
+						equal,
+						baseUrl,
+					});
 				} else {
-					ctx.render("404.html", { code: 404, msg: "改文章不存在" });
+					ctx.render("404.html", { code: 404, msg: "改文章不存在", baseUrl });
 					ctx.response.status = 404;
 				}
 			} catch (e) {
-				ctx.render("404.html", { code: 404, msg: e });
+				ctx.render("404.html", { code: 404, msg: e, baseUrl });
 			}
 		});
 	}
@@ -409,11 +532,21 @@ export namespace HomeCtr {
 			try {
 				const user = ctx.state.userData.data;
 				const id = ctx.params.id;
-				const count = await Article.where({ "id": id, "user_id": user.id })
-					.count();
-				if (count === 1) {
-					const r = await Article.deleteById(id);
-					ctx.response.body = { code: 200, msg: "删除成功" };
+				const info = await Article.where({ "id": id, "user_id": user.id })
+					.get() as Model[];
+				if (info.length === 1) {
+					const model = info[0];
+					const state = model.article_state as number;
+					console.log("state: ", model);
+					if (state === 1) {
+						model.article_state = 0;
+					} else {
+						console.log("set to 1");
+						model.article_state = 1;
+					}
+					model.update_time = new Date();
+					await model.update();
+					ctx.response.body = { code: 200, msg: "设置成功" };
 				} else {
 					ctx.response.body = { code: 400, msg: "不存在该文章" };
 				}
@@ -460,22 +593,125 @@ export namespace HomeCtr {
 		);
 	}
 
-
 	export function delComment(router: Router<Record<string, any>>) {
-		router.post("/delcomment/:id", MymiddleWare.authorizedWithJson, async (ctx) => {
+		router.post(
+			"/delcomment/:id",
+			MymiddleWare.authorizedWithJson,
+			async (ctx) => {
+				try {
+					const user = ctx.state.userData.data;
+					const id = ctx.params.id;
+					const count = await Comment.where({ "id": id, "user_id": user.id })
+						.count();
+					if (count === 1) {
+						const r = await Comment.deleteById(id);
+						ctx.response.body = { code: 200, msg: "删除成功" };
+					} else {
+						ctx.response.body = { code: 400, msg: "删除失败" };
+					}
+				} catch (e) {
+					ctx.response.body = { code: 400, msg: e };
+				}
+			},
+		);
+	}
+
+	export function commentedit(router: Router<Record<string, any>>) {
+		router.get("/commentedit/:id", MymiddleWare.authorized, async (ctx) => {
 			try {
 				const user = ctx.state.userData.data;
-				const id = ctx.params.id;
-				const count = await Comment.where({ "id": id, "user_id": user.id })
-					.count();
-				if (count === 1) {
-					const r = await Comment.deleteById(id);
-					ctx.response.body = { code: 200, msg: "删除成功" };
+				const info = await Comment.where({
+					"user_id": user.id,
+					"id": ctx.params.id,
+				}).get() as Model[];
+				if (info.length === 1) {
+					ctx.render("editcomment.html", { info: info[0], baseUrl });
 				} else {
-					ctx.response.body = { code: 400, msg: "删除失败" };
+					ctx.render("404.html", { code: 400, msg: info, baseUrl });
+					ctx.response.status = 400;
 				}
 			} catch (e) {
-				ctx.response.body = { code: 400, msg: e };
+				ctx.render("404.html", { code: 400, msg: e, baseUrl });
+				ctx.response.status = 500;
+			}
+		});
+	}
+
+	export function postCommentEdit(router: Router<Record<string, any>>) {
+		router.post(
+			"/editcomment/:id",
+			MymiddleWare.authorizedWithJson,
+			async (ctx) => {
+				try {
+					const user = ctx.state.userData.data;
+					const body = ctx.request.body() as BodyForm;
+					const form = await body.value;
+					const comment = form.get("comment");
+					if (comment === "" || comment === null || comment === undefined) {
+						ctx.response.body = { code: 400, msg: "内容为空" };
+						return;
+					}
+					const info = await Comment.where({
+						"user_id": user.id,
+						"id": ctx.params.id,
+					}).get() as Model[];
+					if (info.length === 1) {
+						const data = info[0];
+						data.update_time = new Date();
+						data.comment = comment;
+						await data.update();
+						ctx.response.body = { code: 200, msg: "" };
+					} else {
+						ctx.response.body = { code: 400, msg: info };
+						ctx.response.status = 400;
+					}
+				} catch (e) {
+					ctx.response.body = { code: 400, msg: e };
+					ctx.response.status = 500;
+				}
+			},
+		);
+	}
+
+	export async function personEdit(router: Router<Record<string, any>>) {
+		router.get("/personEdit", MymiddleWare.authorized, async (ctx) => {
+			const emptyString = (a: string) => {
+				return a === "";
+			}
+			try {
+				const user = ctx.state.userData.data;
+				const userInfo = await User.where({ id: user.id }).get() as Model[];
+				console.log(userInfo);
+				ctx.render("person.html", { info: userInfo[0], emptyString });
+			} catch (e) {
+				ctx.render("404.html", { code: 400, msg: e });
+				ctx.response.status = 500;
+			}
+		})
+	}
+
+	export async function saveAvatar(router: Router<Record<string, any>>) {
+		router.post("/saveAvatar", MymiddleWare.authorized, async (ctx) => {
+			try {
+				const user = ctx.state.userData.data;
+				const body = ctx.request.body() as BodyForm;
+				const form = await body.value;
+				const path = form.get("path");
+				if (path === "" || path === null || path === undefined) {
+					ctx.response.body = { code: 400, msg: "路径为空" }
+					return;
+				}
+				const userInfo = await User.where({ id: user.id }).get() as Model[];
+				if (userInfo.length !== 0) {
+					const info = userInfo[0];
+					console.log("avatar path: ",path);
+					console.log(info);
+					info.avatar = path;
+					await info.update();
+					ctx.response.body = { code: 200, msg: "修改成功" }
+				}
+			} catch (e) {
+				ctx.response.body = { code: 500, msg: e }
 			}
 		})
 	}

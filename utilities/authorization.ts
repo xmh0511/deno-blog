@@ -67,6 +67,7 @@ export namespace MymiddleWare {
 		try {
 			const cookie = new Cookies(ctx.request, ctx.response);
 			const token = await cookie.get("token");
+			//console.log("line 70 ", token)
 			if (token === null || token === undefined) {
 				ctx.render("404.html", { message: "无效身份" });
 				ctx.response.status = 401;

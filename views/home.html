@@ -11,22 +11,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
+	<base href="{{baseUrl}}" />
 	<meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
 	<meta http-equiv="Content-Language" content="zh-CN">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<title>不落阁 - 一个.NET程序员的个人博客网站</title>
-	<link rel="shortcut icon" href="/public/images/Logo_40.png" type="image/x-icon">
+	<link rel="shortcut icon" href="./public/images/Logo_40.png" type="image/x-icon">
 	<!--Layui-->
-	<link href="/public/plug/layui/css/layui.css" rel="stylesheet" />
+	<link href="./public/plug/layui/css/layui.css" rel="stylesheet" />
 	<!--font-awesome-->
-	<link href="/public/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+	<link href="./public/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 	<!--全局样式表-->
-	<link href="/public/css/global.css" rel="stylesheet" />
+	<link href="./public/css/global.css" rel="stylesheet" />
 	<!-- 本页样式表 -->
-	<link href="/public/css/home.css" rel="stylesheet" />
-	<script type="text/javascript" src="/public/js/jquery-3.6.0.min.js"></script>
-	<script type="text/javascript" src="/public/plug/layui/layui.js"></script>
-	<script type="text/javascript" src="/public/js/login.js"></script>
+	<link href="./public/css/home.css" rel="stylesheet" />
+	<script type="text/javascript" src="./public/js/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="./public/plug/layui/layui.js"></script>
+	<script type="text/javascript" src="./public/js/login.js"></script>
 </head>
 
 <body>
@@ -71,11 +72,12 @@
 						<div class="clear"></div>
 						<div class="article-footer">
 							<span><i
-									class="fa fa-clock-o"></i>&nbsp;&nbsp;{{format(item.create_time,"yyyy-MM-dd")}}</span>
+									class="fa fa-clock-o"></i>&nbsp;&nbsp;{{format(item.update_time,"yyyy-MM-dd")}}</span>
 							<span class="article-author"><i class="fa fa-user"></i>&nbsp;&nbsp;{{item.userName}}</span>
 							<span><i class="fa fa-tag"></i>&nbsp;&nbsp;<a href="#">{{item.tagName}}</a></span>
-							<span class="article-viewinfo"><i class="fa fa-eye"></i>&nbsp;0</span>
-							<span class="article-viewinfo"><i class="fa fa-commenting"></i>&nbsp;4</span>
+							<span class="article-viewinfo"><i class="fa fa-eye"></i>&nbsp;{{item.read_count}}</span>
+							<span class="article-viewinfo"><i
+									class="fa fa-commenting"></i>&nbsp;{{item.commentCount}}</span>
 						</div>
 					</div>
 					{% endfor %}
@@ -88,7 +90,11 @@
 					{% if login %}
 					<div class="blogerinfo shadow">
 						<div class="blogerinfo-figure">
-							<img src="/public/images/Absolutely.jpg" alt="Absolutely" />
+							{% if emptyString(avatar) %}
+							<img id="avatarContainer" src="{{baseUrl}}./public/images/Absolutely.jpg" alt="Absolutely" />
+							{% else %}
+							<img id="avatarContainer" src="{{avatar}}" alt="Absolutely" />
+							{% endif %}
 						</div>
 						<div class="person-box">
 							<div class="person-box-item">
@@ -96,22 +102,12 @@
 								<p class="blogerinfo-introduce"><span>等级:</span>{{data.data.level}}</p>
 							</div>
 							<div class="person-box-item">
-								<p class="blogerinfo-nickname"><a href="/add"><button
-										class="layui-btn layui-btn-primary layui-border-blue">发帖</button></a></p>
-								<p><a href="/list/1"><span>帖子:</span>{{post_count}}</a></p>
+								<p class="blogerinfo-nickname"><a href="./add"><button
+											class="layui-btn layui-btn-primary layui-border-blue">发帖</button></a></p>
+								<p><a href="./list/1"><span>帖子:</span>{{post_count}}</a></p>
 							</div>
 						</div>
 						<hr />
-						<!-- <div class="blogerinfo-contact">
-							<a target="_blank" title="QQ交流" href="javascript:layer.msg('启动QQ会话窗口')"><i
-									class="fa fa-qq fa-2x"></i></a>
-							<a target="_blank" title="给我写信" href="javascript:layer.msg('启动邮我窗口')"><i
-									class="fa fa-envelope fa-2x"></i></a>
-							<a target="_blank" title="新浪微博" href="javascript:layer.msg('转到你的微博主页')"><i
-									class="fa fa-weibo fa-2x"></i></a>
-							<a target="_blank" title="码云" href="javascript:layer.msg('转到你的github主页')"><i
-									class="fa fa-git fa-2x"></i></a>
-						</div> -->
 					</div>
 					{% else %}
 					<div class="blogerinfo shadow">
@@ -125,18 +121,10 @@
 					<div class="blog-module shadow">
 						<div class="blog-module-title">热文排行</div>
 						<ul class="fa-ul blog-module-ul">
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">Web安全之跨站请求伪造CSRF</a></li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">ASP.NET MVC
-									防范跨站请求伪造（CSRF）</a></li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">常用正则表达式</a></li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">EF CodeFirst数据迁移常用指令</a>
-							</li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">浅谈.NET Framework基元类型</a>
-							</li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">C#基础知识回顾-扩展方法</a></li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">一步步制作时光轴（一）（HTML篇）</a>
-							</li>
-							<li><i class="fa-li fa fa-hand-o-right"></i><a href="detail.html">一步步制作时光轴（二）（CSS篇）</a></li>
+							{% for item in hotArticles %}
+							<li><i class="fa-li fa fa-hand-o-right"></i><a
+									href="./article/{{item.id}}">{{item.title}}</a></li>
+							{% endfor %}
 						</ul>
 					</div>
 				</div>
@@ -197,11 +185,11 @@
 	<!--遮罩-->
 	<div class="blog-mask animated layui-hide"></div>
 	<!-- layui.js -->
-	<script src="/public/plug/layui/layui.js"></script>
+	<script src="./public/plug/layui/layui.js"></script>
 	<!-- 全局脚本 -->
-	<script src="/public/js/global.js"></script>
+	<script src="./public/js/global.js"></script>
 	<!-- 本页脚本 -->
-	<script src="/public/js/home.js"></script>
+	<script src="./public/js/home.js"></script>
 </body>
 <script>
 	function toLogin() {
@@ -212,8 +200,9 @@
 	}
 </script>
 <script>
-	layui.use('laypage', function () {
+	layui.use(['laypage', "upload"], function () {
 		var laypage = layui.laypage;
+		var upload = layui.upload;
 
 		//执行一个laypage实例
 		laypage.render({
@@ -222,11 +211,23 @@
 			limit: 10,
 			jump: function (obj, first) {
 				if (!first) {
-					window.location.href = `/${obj.curr}`;
+					window.location.href = `./${obj.curr}`;
 				}
+			}
+		});
+
+		var uploadInst = upload.render({
+			elem: '#test1' //绑定元素
+			, url: '{{baseUrl}}./upload/' //上传接口
+			, done: function (res) {
+				//上传完毕回调
+			}
+			, error: function () {
+				//请求异常回调
 			}
 		});
 	});
 </script>
-
+<style>
+</style>
 </html>

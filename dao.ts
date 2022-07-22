@@ -1,6 +1,8 @@
 import { Database, MySQLConnector } from "https://raw.githubusercontent.com/xmh0511/denodb/master/mod.ts";
-import { User, Article, Tag, Level, Comment } from "./model/model.ts";
+import { User, Article, Tag, Level, Comment, ReadCount } from "./model/model.ts";
 
+let Dao: any = null;
+console.log(Dao);
 
 export function initDB() {
 	const connector = new MySQLConnector({
@@ -10,10 +12,12 @@ export function initDB() {
 		password: '970252187',
 		port: 3306, // optional
 	});
-	const db = new Database(connector);
-	db.link([User, Article, Tag, Level, Comment]);
+	Dao = new Database(connector);
+	Dao.link([User, Article, Tag, Level, Comment, ReadCount]);
+	return Dao;
 }
 
 
 
-export { User, Article, Tag, Level, Comment };
+
+export { Database, Dao, User, Article, Tag, Level, Comment, ReadCount };

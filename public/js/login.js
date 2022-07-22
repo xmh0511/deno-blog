@@ -22,14 +22,14 @@ layui.use(['jquery', 'layer', 'form'], function () {
 		obj.field.rememberMe = !!obj.field.remember;
 		layer.load(2);
 		console.log(obj.field);
-		$.post('/login', obj.field, function (res) {
+		$.post('./login', obj.field, function (res) {
 			if (200 === res.code) {
 				console.log(res);
 				layer.msg('登录成功', { icon: 1, time: 1500 }, function () {
 					if (obj.field.rememberMe === true) {
-						document.cookie = `token=${res.token};expires=${new Date(new Date().setDate(new Date().getDate() + 10)).toUTCString()}`;
+						document.cookie = `token=${res.token};expires=${new Date(new Date().setDate(new Date().getDate() + 10)).toUTCString()};Path=${res.baseUrl}`;
 					} else {
-						document.cookie = `token=${res.token}`;
+						document.cookie = `token=${res.token};Path=${res.baseUrl}`;
 					}
 					location.replace('/');
 				});
@@ -45,14 +45,14 @@ layui.use(['jquery', 'layer', 'form'], function () {
 	// 注册表单提交
 	form.on('submit(regSubmit)', function (obj) {
 		layer.load(2);
-		$.post('/reg', obj.field, function (res) {
+		$.post('./reg', obj.field, function (res) {
 			console.log(res)
 			if (200 === res.code) {
 				//console.log(res);
 				layer.msg(res.msg, { icon: 1, time: 1500 }, function () {
 					//console.log("abc:", `token=${res.token};expires=${new Date(new Date().setDate(new Date().getDate() + 10)).toUTCString()}`);
-					document.cookie = `token=${res.token};expires=${new Date(new Date().setDate(new Date().getDate() + 10)).toUTCString()}`;
-					location.replace('/');
+					document.cookie = `token=${res.token};expires=${new Date(new Date().setDate(new Date().getDate() + 10)).toUTCString()};Path=${res.baseUrl}`;
+					location.replace('./');
 				});
 			} else {
 				layer.closeAll('loading');

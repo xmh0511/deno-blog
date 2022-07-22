@@ -26,6 +26,9 @@ class User extends Model {
 		},
 		privilege: {
 			type: DataTypes.INTEGER
+		},
+		avatar: {
+			type: DataTypes.STRING
 		}
 	};
 }
@@ -40,6 +43,7 @@ class Article extends Model {
 			autoIncrement: true,
 		},
 		user_id: DataTypes.INTEGER,
+		article_state: DataTypes.INTEGER,
 		tag_id: DataTypes.INTEGER,
 		create_time: {
 			type: DataTypes.DATETIME
@@ -124,4 +128,26 @@ class Comment extends Model {
 
 }
 
-export { User, Article, Tag, Level,Comment };
+class ReadCount extends Model {
+	static table = 'view_tb';
+
+
+	static fields = {
+		id: {
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		create_time: {
+			type: DataTypes.DATETIME
+		},
+		article_id: {
+			type: DataTypes.INTEGER
+		},
+		ip: {
+			type: DataTypes.STRING
+		},
+	};
+
+}
+
+export { User, Article, Tag, Level, Comment, ReadCount };

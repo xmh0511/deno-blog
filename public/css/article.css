@@ -104,6 +104,9 @@
 .post-button button {
 	width: 100%;
 }
+.comment-bar-item{
+	margin-right: 10px;
+}
 
 @media (min-width: 992px) {
 	.blog-search {
