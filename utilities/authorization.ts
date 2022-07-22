@@ -93,8 +93,7 @@ export namespace MymiddleWare {
 			const cookie = new Cookies(ctx.request, ctx.response);
 			const token = await cookie.get("token");
 			if (token === null || token === undefined) {
-				ctx.response.body = { code: 401, msg: "无效身份" };
-				ctx.response.status = 401;
+				ctx.response.body = { code: 401, msg: "无效身份,请先登录" };
 				return;
 			}
 			const data = await Utilities.getInfoFromJWT(token);
@@ -105,16 +104,13 @@ export namespace MymiddleWare {
 					await next(data);
 					delete ctx.state.userData;
 				} else {
-					ctx.response.body = { code: 401, msg: "无效身份" };
-					ctx.response.status = 401;
+					ctx.response.body = { code: 401, msg: "无效身份,请先登录" };
 				}
 			} else {
-				ctx.response.body = { code: 401, msg: "无效身份" };
-				ctx.response.status = 401;
+				ctx.response.body = { code: 401, msg: "无效身份,请先登录" };
 			}
 		} catch (e) {
-			ctx.response.body = { code: 401, msg: "无效身份" };
-			ctx.response.status = 401;
+			ctx.response.body = { code: 401, msg: "无效身份,请先登录" };
 		}
 	}
 
