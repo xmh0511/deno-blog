@@ -124,6 +124,9 @@ class Comment extends Model {
 		article_id: {
 			type: DataTypes.INTEGER
 		},
+		md_content: {
+			type: DataTypes.STRING
+		},
 	};
 
 }

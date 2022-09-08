@@ -65,7 +65,7 @@
 					{% for item in articles %}
 					<div class="article shadow">
 						<div>
-							<a href="/article/{{item.id}}">
+							<a href="./article/{{item.id}}">
 								<p>{{item.title}}</p>
 							</a>
 						</div>
@@ -209,9 +209,10 @@
 			elem: 'pagination', //注意，这里的 test1 是 ID，不用加 # 号
 			count: `{{ total }}`, //数据总数，从服务端得到
 			limit: 10,
+			curr: `{{page}}`,
 			jump: function (obj, first) {
 				if (!first) {
-					window.location.href = `./${obj.curr}`;
+					window.location.href = `{{baseUrl}}./home/${obj.curr}`;
 				}
 			}
 		});

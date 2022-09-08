@@ -1,6 +1,9 @@
-import { Application, Cookies, Router, helpers, BodyForm, BodyFormData, FormDataFile } from "https://deno.land/x/oak/mod.ts";
 
-import { viewEngine, oakAdapter, denjuckEngine } from "https://deno.land/x/view_engine@v10.5.1c/mod.ts";
+import { Application, Cookies, Router, helpers, BodyForm, BodyFormData, FormDataFile } from  "https://deno.land/x/oak@v10.5.1/mod.ts";
+
+import { viewEngine, oakAdapter ,denjuckEngine} from "https://deno.land/x/view_engine@v10.5.1c/mod.ts"
+
+
 
 
 import { Utilities, MymiddleWare } from "./utilities/authorization.ts";
@@ -59,21 +62,21 @@ HomeCtr.postCommentEdit(router);
 HomeCtr.personEdit(router);
 HomeCtr.saveAvatar(router);
 
+const baseUrl = "/";
 
 router.get("/", (ctx) => {
-	ctx.response.redirect("/home/1");
+	ctx.response.redirect(`${baseUrl}home/1`);
 })
 
 router.get("/home", (ctx) => {
-	ctx.response.redirect("/home/1");
+	ctx.response.redirect(`${baseUrl}home/1`);
 })
 
 router.get("/list", (ctx) => {
-	ctx.response.redirect("/list/1");
+	ctx.response.redirect(`${baseUrl}list/1`);
 })
 
 
-const baseUrl = "/";
 
 router.post("/upload", MymiddleWare.authorized, async (ctx) => {
 	try {
@@ -89,14 +92,14 @@ router.post("/upload", MymiddleWare.authorized, async (ctx) => {
 					const filepath = file.filename as string;
 					const filename = basename(filepath);
 					await move(file.filename as string, `${Deno.cwd()}/public/upload/${filename}`);
-					res.push({ error: 0, url: `${baseUrl}./public/upload/${filename}`, name: filename });
+					res.push({ success: 1, url: `${baseUrl}./public/upload/${filename}`, name: filename });
 				} else {
-					ctx.response.body = { error: "无效请求" };
+					ctx.response.body = { success:0, message: "无效请求" };
 					break;
 				}
 			}
 			if (res.length !== 0) {
-				ctx.response.body = res;
+				ctx.response.body = res[0];
 			}
 		}
 	} catch (e) {

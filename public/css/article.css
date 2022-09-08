@@ -107,6 +107,9 @@
 .comment-bar-item{
 	margin-right: 10px;
 }
+.editormd-html-preview{
+	box-sizing: border-box;
+}
 
 @media (min-width: 992px) {
 	.blog-search {

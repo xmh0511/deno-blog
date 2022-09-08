@@ -3,6 +3,8 @@ layui.use(['jquery', 'layer', 'form'], function () {
 	var layer = layui.layer;
 	var form = layui.form;
 
+	const baseUrl = "/blog/";
+
 
 	//$('.login-wrapper').removeClass('layui-hide');
 
@@ -31,7 +33,7 @@ layui.use(['jquery', 'layer', 'form'], function () {
 					} else {
 						document.cookie = `token=${res.token};Path=${res.baseUrl}`;
 					}
-					location.replace('/');
+					location.replace('./');
 				});
 			} else {
 				layer.closeAll('loading');

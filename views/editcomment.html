@@ -8,15 +8,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>发帖</title>
 	<link rel="stylesheet" href="./public/plug/layui/css/layui.css">
+	<link rel="stylesheet" href="./public/markdown/css/editormd.min.css">
+	<link rel="stylesheet" href="./public/markdown/css/editormd.preview.min.css">
 	<script type="text/javascript" src="./public/js/jquery-3.6.0.min.js"></script>
 	<script type="text/javascript" src="./public/plug/layui/layui.js"></script>
-	<script type="text/javascript" src="./public/js/iceEditor.js"></script>
+	<script type="text/javascript" src="./public/markdown/editormd.min.js"></script>
 </head>
 
 <body>
 	<div class="container">
-		<div>
-			<div id="content"></div>
+		<div class="wrapper-container">
+			<div id="content">
+				<textarea style="display:none;">{{info.md_content}}</textarea>
+			</div>
 		</div>
 		<div class="post-button">
 			<button id="postButton" type="button" class="layui-btn">提交</button>
@@ -25,27 +29,28 @@
 </body>
 <script type="text/javascript" src="./public/js/clipboard.min.js"></script>
 <script type="text/javascript">
-	const instance = ice.editor("content", function () {
-		this.setValue(`{{info.comment | safe }}`);
-		this.uploadUrl = "./upload";
-		this.width = "100%";
-		this.height = '80%'; //高度
-		this.maxWindow = false;
-		$(this.drag).remove();
-		this.create();
-	});
+
+	var editor = editormd("content", {
+            width: "100%",
+            height: "100%",
+			imageUpload:true,
+			imageUploadURL:"./upload",
+			saveHTMLToTextarea:true,
+            // markdown: "xxxx",     // dynamic set Markdown text
+            path : "./public/markdown/lib/"  // Autoload modules mode, codemirror, marked... dependents libs path
+    });
 	layui.use('layer', function () {
 		var layer = layui.layer;
 
 		$("#postButton").off("click").on("click", function () {
-			console.log("eee");
-			const content = instance.getValue();
-			if (content === "") {
+			const content = editor.getHTML();
+			const md_content = editor.getMarkdown();
+			if (content === "" || md_content === "") {
 				layer.msg('内容为空');
 				return;
 			}
 			layer.load(2);
-			$.post("./editcomment/{{info.id}}", { comment: content }, function (r) {
+			$.post("./editcomment/{{info.id}}", { comment: content, md_content }, function (r) {
 				if (r.code === 200) {
 					layer.msg('提交成功', { icon: 1, time: 1500 }, function () {
 						window.parent.requestRefresh();
@@ -64,7 +69,7 @@
 	}
 
 	.container {
-		height: 306px;
+		height: 100%;
 		background-color: rgba(0, 0, 0, .2);
 		box-sizing: border-box;
 		display: flex;
@@ -74,6 +79,15 @@
 
 	.post-button {
 		flex: 1;
+		margin-top: 5px;
+		width:100%;
+	}
+	.post-button button {
+		width:100%;
+	}
+	.wrapper-container{
+		width:100%;
+		height:340px;
 	}
 </style>
 

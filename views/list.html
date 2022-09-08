@@ -40,7 +40,7 @@
 				<img src="/public/images/Absolutely.jpg" alt="Absolutely" title="Absolutely" />
 			</a>
 			<!-- 不落阁 -->
-			<a class="blog-logo" href="/">不落阁</a>
+			<a class="blog-logo" href="{{baseUrl}}">不落阁</a>
 			<!-- 导航菜单 -->
 
 			<!-- 手机和平板的导航开关 -->
@@ -240,9 +240,10 @@
 			elem: 'pagination', //注意，这里的 test1 是 ID，不用加 # 号
 			count: `{{ total }}`, //数据总数，从服务端得到
 			limit: 10,
+			curr:`{{page}}`,
 			jump: function (obj, first) {
 				if (!first) {
-					window.location.href = `./${obj.curr}`;
+					window.location.href = `{{basUrl}}./list/${obj.curr}`;
 				}
 			}
 		});

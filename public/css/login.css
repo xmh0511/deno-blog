@@ -142,7 +142,7 @@ body {
 	min-height: 200px;
 }
 .article-title{
-	width:90%;
+	width:100%;
 	margin-bottom: 0px;
 	background-color: #eee;
 	display: flex;
@@ -155,7 +155,6 @@ body {
 }
 .article-title-container{
 	flex: 1;
-	z-index: 999;
 }
 .post-button button{
 	z-index: 999;

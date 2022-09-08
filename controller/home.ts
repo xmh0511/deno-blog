@@ -81,11 +81,11 @@ async function addViewCount(ip: string, id: number): Promise<boolean> {
 }
 
 export namespace HomeCtr {
-	export function index(router: Router<Record<string, any>>) {
+	export function index(router: any) {
 		const emptyString = (a: string) => {
 			return a === "";
 		}
-		router.get("/home/:page", async (ctx) => {
+		router.get("/home/:page", async (ctx:any) => {
 			try {
 				const cookie = new Cookies(ctx.request, ctx.response);
 				const token = await cookie.get("token");
@@ -102,13 +102,14 @@ export namespace HomeCtr {
 					"tag_tb.name as tagName",
 					"user_tb.name as userName",
 					"article_tb.article_state",
-				).join(Tag, Tag.field("id"), Article.field("tag_id")).join(
+				).orderBy("article_tb.update_time","desc").join(Tag, Tag.field("id"), Article.field("tag_id")).join(
 					User,
 					User.field("id"),
 					Article.field("user_id"),
-				).where("article_state", "1").orderBy("update_time").offset(
+				).where("article_state", "1").orderBy("article_tb.update_time","desc").offset(
 					(pageNumber - 1) * count,
-				).limit(count).get() as Model[];
+				).orderBy("article_tb.update_time","desc").limit(count).orderBy("article_tb.update_time","desc").get() as Model[];
+				//console.log(articles);
 				for (const item of articles) {
 					const id = item.id;
 					const count = await Comment.where("article_id", id as FieldValue)
@@ -128,7 +129,6 @@ export namespace HomeCtr {
 						"*",
 					).all();
 					const userInfo = await User.where({ id: data.data.id }).get() as Model[];
-					articles = articles.reverse();
 					await ctx.render("home.html", {
 						login: true,
 						data: data,
@@ -161,20 +161,20 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function register(router: Router<Record<string, any>>) {
-		router.get("/register", async (ctx) => {
+	export function register(router: any) {
+		router.get("/register", async (ctx:any) => {
 			await ctx.render("reg.html", { baseUrl });
 		});
 	}
 
-	export function loginPage(router: Router<Record<string, any>>) {
-		router.get("/login", async (ctx) => {
+	export function loginPage(router: any) {
+		router.get("/login", async (ctx:any) => {
 			await ctx.render("login.html", { baseUrl });
 		});
 	}
 
-	export function login(router: Router<Record<string, any>>) {
-		router.post("/login", async (ctx) => {
+	export function login(router: any) {
+		router.post("/login", async (ctx:any) => {
 			try {
 				if (ctx.request.hasBody) {
 					const form = await ctx.request.body() as BodyForm;
@@ -215,8 +215,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function reg(router: Router<Record<string, any>>) {
-		router.post("/reg", async (ctx) => {
+	export function reg(router: any) {
+		router.post("/reg", async (ctx:any) => {
 			try {
 				if (ctx.request.hasBody) {
 					const form = await ctx.request.body() as BodyForm;
@@ -254,8 +254,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function add(router: Router<Record<string, any>>) {
-		router.get("/add", MymiddleWare.authorized, async (ctx) => {
+	export function add(router: any) {
+		router.get("/add", MymiddleWare.authorized, async (ctx:any) => {
 			//const user = ctx.state.userData.data;
 			try {
 				const tags = await Tag.select("*").all();
@@ -267,12 +267,12 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function postadd(router: Router<Record<string, any>>) {
+	export function postadd(router: any) {
 		router.post(
 			"/add",
 			MymiddleWare.authorizedWithJson,
 			MymiddleWare.hasformbody,
-			async (ctx) => {
+			async (ctx:any) => {
 				try {
 					//console.log("evaluation");
 					const user = ctx.state.userData.data;
@@ -305,8 +305,8 @@ export namespace HomeCtr {
 		);
 	}
 
-	export function viewArticle(router: Router<Record<string, any>>) {
-		router.get("/article/:id", async (ctx) => {
+	export function viewArticle(router: any) {
+		router.get("/article/:id", async (ctx:any) => {
 			const equal = (a: number, b: number) => {
 				//console.log(a, b);
 				return a === b;
@@ -395,8 +395,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function articleList(router: Router<Record<string, any>>) {
-		router.get("/list/:page", MymiddleWare.authorized, async (ctx) => {
+	export function articleList(router: any) {
+		router.get("/list/:page", MymiddleWare.authorized, async (ctx:any) => {
 			const emptyString = (a: string) => {
 				return a === "";
 			}
@@ -412,10 +412,10 @@ export namespace HomeCtr {
 					"article_tb.create_time",
 					"tag_tb.name as tagName",
 					"article_tb.article_state",
-				).join(Tag, Tag.field("id"), Article.field("tag_id")).where(
+				).orderBy("article_tb.update_time","desc").join(Tag, Tag.field("id"), Article.field("tag_id")).where(
 					"user_id",
 					user.id,
-				).offset((page - 1) * count).limit(count).get() as Model[];
+				).orderBy("article_tb.update_time","desc").offset((page - 1) * count).orderBy("article_tb.update_time","desc").limit(count).get() as Model[];
 				for (const item of articles) {
 					const count = await Comment.where("article_id", item.id as FieldValue)
 						.count();
@@ -449,8 +449,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function editArticle(router: Router<Record<string, any>>) {
-		router.get("/edit/:id", MymiddleWare.authorized, async (ctx) => {
+	export function editArticle(router: any) {
+		router.get("/edit/:id", MymiddleWare.authorized, async (ctx:any) => {
 			const equal = (a: number, b: number) => {
 				//console.log(a, b);
 				return a === b;
@@ -483,8 +483,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function postEdit(router: Router<Record<string, any>>) {
-		router.post("/edit", MymiddleWare.authorizedWithJson, async (ctx) => {
+	export function postEdit(router: any) {
+		router.post("/edit", MymiddleWare.authorizedWithJson, async (ctx:any) => {
 			try {
 				if (ctx.request.hasBody) {
 					const body = ctx.request.body() as BodyForm;
@@ -527,8 +527,8 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function deleteArticle(router: Router<Record<string, any>>) {
-		router.post("/delete/:id", MymiddleWare.authorizedWithJson, async (ctx) => {
+	export function deleteArticle(router: any) {
+		router.post("/delete/:id", MymiddleWare.authorizedWithJson, async (ctx:any) => {
 			try {
 				const user = ctx.state.userData.data;
 				const id = ctx.params.id;
@@ -556,11 +556,11 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function postComment(router: Router<Record<string, any>>) {
+	export function postComment(router: any) {
 		router.post(
 			"/comment/:id",
 			MymiddleWare.authorizedWithJson,
-			async (ctx) => {
+			async (ctx:any) => {
 				try {
 					const user = ctx.state.userData.data;
 					const articleId = ctx.params.id;
@@ -575,12 +575,14 @@ export namespace HomeCtr {
 						const body = ctx.request.body() as BodyForm;
 						const form = await body.value;
 						const comment = form.get("comment");
+						const md_content = form.get("md_content");
 						const info = new Comment();
 						info.create_time = new Date();
 						info.update_time = new Date();
 						info.article_id = articleId;
 						info.user_id = user.id;
 						info.comment = comment;
+						info.md_content = md_content;
 						await info.save();
 						ctx.response.body = { code: 200, msg: "提交成" };
 					} else {
@@ -593,11 +595,11 @@ export namespace HomeCtr {
 		);
 	}
 
-	export function delComment(router: Router<Record<string, any>>) {
+	export function delComment(router: any) {
 		router.post(
 			"/delcomment/:id",
 			MymiddleWare.authorizedWithJson,
-			async (ctx) => {
+			async (ctx:any) => {
 				try {
 					const user = ctx.state.userData.data;
 					const id = ctx.params.id;
@@ -616,8 +618,8 @@ export namespace HomeCtr {
 		);
 	}
 
-	export function commentedit(router: Router<Record<string, any>>) {
-		router.get("/commentedit/:id", MymiddleWare.authorized, async (ctx) => {
+	export function commentedit(router: any) {
+		router.get("/commentedit/:id", MymiddleWare.authorized, async (ctx:any) => {
 			try {
 				const user = ctx.state.userData.data;
 				const info = await Comment.where({
@@ -637,11 +639,11 @@ export namespace HomeCtr {
 		});
 	}
 
-	export function postCommentEdit(router: Router<Record<string, any>>) {
+	export function postCommentEdit(router: any) {
 		router.post(
 			"/editcomment/:id",
 			MymiddleWare.authorizedWithJson,
-			async (ctx) => {
+			async (ctx:any) => {
 				try {
 					const user = ctx.state.userData.data;
 					const body = ctx.request.body() as BodyForm;
@@ -673,8 +675,8 @@ export namespace HomeCtr {
 		);
 	}
 
-	export async function personEdit(router: Router<Record<string, any>>) {
-		router.get("/personEdit", MymiddleWare.authorized, async (ctx) => {
+	export async function personEdit(router: any) {
+		router.get("/personEdit", MymiddleWare.authorized, async (ctx:any) => {
 			const emptyString = (a: string) => {
 				return a === "";
 			}
@@ -690,8 +692,8 @@ export namespace HomeCtr {
 		})
 	}
 
-	export async function saveAvatar(router: Router<Record<string, any>>) {
-		router.post("/saveAvatar", MymiddleWare.authorized, async (ctx) => {
+	export async function saveAvatar(router: any) {
+		router.post("/saveAvatar", MymiddleWare.authorized, async (ctx:any) => {
 			try {
 				const user = ctx.state.userData.data;
 				const body = ctx.request.body() as BodyForm;

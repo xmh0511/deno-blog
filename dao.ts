@@ -7,7 +7,7 @@ console.log(Dao);
 export function initDB() {
 	const connector = new MySQLConnector({
 		database: 'deno',
-		host: 'localhost',
+		host: '127.0.0.1',
 		username: 'root',
 		password: '970252187',
 		port: 3306, // optional
