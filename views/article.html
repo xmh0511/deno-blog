@@ -1,21 +1,13 @@
-﻿<!--
-    
- @Name：不落阁整站模板源码
- @Author：Absolutely
- @Site：http://www.lyblogs.cn
+﻿<!DOCTYPE html>
 
- -->
-
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 	<base href="{{baseUrl}}" />
-	<meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
+	<meta http-equiv="Content-Type" content="text/html; Charset=utf-8">
 	<meta http-equiv="Content-Language" content="zh-CN">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<title>不落阁 - 文章专栏</title>
+	<title>Blog - 文章</title>
 	<link rel="shortcut icon" href="./public/images/Logo_40.png" type="image/x-icon">
 	<!--Layui-->
 	<link href="./public/plug/layui/css/layui.css" rel="stylesheet" />
@@ -140,46 +132,16 @@
 	</div>
 	<!-- 底部 -->
 	<footer class="blog-footer">
-		<p><span>Copyright</span><span>&copy;</span><span>2017</span><a href="">不落阁</a><span></span></p>
-		<p><a href="http://www.miibeian.gov.cn/" target="_blank">蜀ICP备16029915号-1</a></p>
+		<p><span>Copyright</span><span>&copy;</span><span>2022</span><a href="">Deno</a><span></span></p>
+		<p><a href="http://www.miibeian.gov.cn/" target="_blank">Design</a></p>
 	</footer>
-	<!--侧边导航-->
-	<ul class="layui-nav layui-nav-tree layui-nav-side blog-nav-left layui-hide" lay-filter="nav">
-		<li class="layui-nav-item">
-			<a href="home.html"><i class="fa fa-home fa-fw"></i>&nbsp;网站首页</a>
-		</li>
-		<li class="layui-nav-item layui-this">
-			<a href="article.html"><i class="fa fa-file-text fa-fw"></i>&nbsp;文章专栏</a>
-		</li>
-		<li class="layui-nav-item">
-			<a href="resource.html"><i class="fa fa-tags fa-fw"></i>&nbsp;资源分享</a>
-		</li>
-		<li class="layui-nav-item">
-			<a href="timeline.html"><i class="fa fa-road fa-fw"></i>&nbsp;点点滴滴</a>
-		</li>
-		<li class="layui-nav-item">
-			<a href="about.html"><i class="fa fa-info fa-fw"></i>&nbsp;关于本站</a>
-		</li>
-	</ul>
-	<!--分享窗体-->
-	<div class="blog-share layui-hide">
-		<div class="blog-share-body">
-			<div style="width: 200px;height:100%;">
-				<div class="bdsharebuttonbox">
-					<a class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
-					<a class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-					<a class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
-					<a class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
-				</div>
-			</div>
-		</div>
-	</div>
+
 	<!--遮罩-->
 	<div class="blog-mask animated layui-hide"></div>
 	<!-- layui.js -->
-	<script src="/public/plug/layui/layui.js"></script>
+	<script src="./public/plug/layui/layui.js"></script>
 	<!-- 全局脚本 -->
-	<script src="/public/js/global.js"></script>
+	<script src="./public/js/global.js"></script>
 </body>
 <style>
 
@@ -215,7 +177,6 @@
 		var layer = layui.layer;
 
 		$(".postButton").off("click").on("click", function () {
-			//console.log("11111")
 			var that = this;
 			let id = `{{info.id}}`
 			let comment = editor.getHTML();

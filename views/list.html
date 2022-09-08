@@ -1,22 +1,13 @@
-﻿<!--
-    
- @Name：不落阁整站模板源码
- @Author：Absolutely
- @Site：http://www.lyblogs.cn
-
- -->
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 	<base href="{{baseUrl}}" />
-	<meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
+	<meta http-equiv="Content-Type" content="text/html; Charset=utf-8">
 	<meta http-equiv="Content-Language" content="zh-CN">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<title>Blog - 个人列表</title>
-	<link rel="shortcut icon" href="./public/images/Logo_40.png" type="image/x-icon">
 	<!--Layui-->
 	<link href="./public/plug/layui/css/layui.css" rel="stylesheet" />
 	<!--font-awesome-->
@@ -37,10 +28,10 @@
 		<div class="blog-container">
 			<!-- QQ互联登陆 -->
 			<a href="javascript:;" class="blog-user layui-hide">
-				<img src="/public/images/Absolutely.jpg" alt="Absolutely" title="Absolutely" />
+				<img src="./public/images/Absolutely.jpg" alt="Absolutely" title="Absolutely" />
 			</a>
 			<!-- 不落阁 -->
-			<a class="blog-logo" href="{{baseUrl}}">不落阁</a>
+			<a class="blog-logo" href="{{baseUrl}}">Blog</a>
 			<!-- 导航菜单 -->
 
 			<!-- 手机和平板的导航开关 -->
@@ -66,11 +57,7 @@
 				<div class="home-tips shadow">
 					<i style="float:left;line-height:17px;" class="fa fa-volume-up"></i>
 					<div class="home-tips-container">
-						<span style="color: #009688">偷偷告诉大家，本博客的后台管理也正在制作，为大家准备了游客专用账号！</span>
-						<span style="color: red">网站新增留言回复啦！使用QQ登陆即可回复，人人都可以回复！</span>
-						<span style="color: red">如果你觉得网站做得还不错，来Fly社区点个赞吧！<a href="http://fly.layui.com/case/2017/"
-								target="_blank" style="color:#01AAED">点我前往</a></span>
-						<span style="color: #009688">不落阁 &nbsp;—— &nbsp;一个.NET程序员的个人博客，新版网站采用Layui为前端框架，目前正在建设中！</span>
+						<span style="color: #009688">my blog</span>
 					</div>
 				</div>
 				<!--左边文章列表-->
@@ -130,16 +117,6 @@
 							</div>
 						</div>
 						<hr />
-						<!-- <div class="blogerinfo-contact">
-							<a target="_blank" title="QQ交流" href="javascript:layer.msg('启动QQ会话窗口')"><i
-									class="fa fa-qq fa-2x"></i></a>
-							<a target="_blank" title="给我写信" href="javascript:layer.msg('启动邮我窗口')"><i
-									class="fa fa-envelope fa-2x"></i></a>
-							<a target="_blank" title="新浪微博" href="javascript:layer.msg('转到你的微博主页')"><i
-									class="fa fa-weibo fa-2x"></i></a>
-							<a target="_blank" title="码云" href="javascript:layer.msg('转到你的github主页')"><i
-									class="fa fa-git fa-2x"></i></a>
-						</div> -->
 					</div>
 					{% else %}
 					<div class="blogerinfo shadow">
@@ -192,28 +169,10 @@
 	</div>
 	<!-- 底部 -->
 	<footer class="blog-footer">
-		<p><span>Copyright</span><span>&copy;</span><span>2022</span><a href="/">不落阁</a><span>Design
+		<p><span>Copyright</span><span>&copy;</span><span>2022</span><a href="/">Blog</a><span>Design
 				By Deno</span></p>
 	</footer>
-	<!--侧边导航-->
-	<ul class="layui-nav layui-nav-tree layui-nav-side blog-nav-left layui-hide" lay-filter="nav">
-		<li class="layui-nav-item layui-this">
-			<a href="home.html"><i class="fa fa-home fa-fw"></i>&nbsp;网站首页</a>
-		</li>
-	</ul>
-	<!--分享窗体-->
-	<div class="blog-share layui-hide">
-		<div class="blog-share-body">
-			<div style="width: 200px;height:100%;">
-				<div class="bdsharebuttonbox">
-					<a class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
-					<a class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-					<a class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
-					<a class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
-				</div>
-			</div>
-		</div>
-	</div>
+
 	<!--遮罩-->
 	<div class="blog-mask animated layui-hide"></div>
 	<!-- layui.js -->

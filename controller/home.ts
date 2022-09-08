@@ -360,7 +360,11 @@ export namespace HomeCtr {
 				} else {
 					const info = article[0];
 					if (info.level === 1) {
-						await addViewCount(ctx.request.ip, info.id as number);
+						let client_ip = ctx.request.ip;
+						if (ctx.request.headers.get("x-forwarded-for") !==undefined){
+							client_ip = ctx.request.headers.get("x-forwarded-for");
+						}
+						await addViewCount(client_ip, info.id as number);
 						ctx.render("article.html", {
 							info,
 							format,
