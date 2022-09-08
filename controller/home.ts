@@ -506,7 +506,7 @@ export namespace HomeCtr {
 						"id": id,
 						"user_id": user.id,
 					}).select("*").get() as Model[];
-					console.log(articleArr);
+					//console.log(articleArr);
 					if (articleArr.length > 0) {
 						const article = articleArr[0];
 						article.update_time = new Date();
@@ -537,7 +537,7 @@ export namespace HomeCtr {
 				if (info.length === 1) {
 					const model = info[0];
 					const state = model.article_state as number;
-					console.log("state: ", model);
+					//console.log("state: ", model);
 					if (state === 1) {
 						model.article_state = 0;
 					} else {
@@ -564,13 +564,13 @@ export namespace HomeCtr {
 				try {
 					const user = ctx.state.userData.data;
 					const articleId = ctx.params.id;
-					console.log(articleId, user.level);
+					//console.log(articleId, user.level);
 					const count = await Article.where({ id: articleId }).where(
 						"level",
 						"<=",
 						user.level,
 					).count();
-					console.log(count);
+					//console.log(count);
 					if (count > 0) {
 						const body = ctx.request.body() as BodyForm;
 						const form = await body.value;
@@ -683,7 +683,7 @@ export namespace HomeCtr {
 			try {
 				const user = ctx.state.userData.data;
 				const userInfo = await User.where({ id: user.id }).get() as Model[];
-				console.log(userInfo);
+				//console.log(userInfo);
 				ctx.render("person.html", { info: userInfo[0], emptyString });
 			} catch (e) {
 				ctx.render("404.html", { code: 400, msg: e });
@@ -706,8 +706,8 @@ export namespace HomeCtr {
 				const userInfo = await User.where({ id: user.id }).get() as Model[];
 				if (userInfo.length !== 0) {
 					const info = userInfo[0];
-					console.log("avatar path: ",path);
-					console.log(info);
+					//console.log("avatar path: ",path);
+					//console.log(info);
 					info.avatar = path;
 					await info.update();
 					ctx.response.body = { code: 200, msg: "修改成功" }
