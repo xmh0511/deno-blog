@@ -134,6 +134,9 @@
 				</div>
 			</div>
 		</div>
+		<div style="display:none;">
+			<textarea id="article_data" >{{info.content | safe}}</textarea>
+		</div>
 	</div>
 	<!-- 底部 -->
 	<footer class="blog-footer">
@@ -183,7 +186,7 @@
 </style>
 <script>
 	testEditormdView = editormd.markdownToHTML("article-content", {
-		markdown: `{{info.content | safe}}`,//+ "\r\n" + $("#append-test").text(),
+		markdown: $("#article_data").text(),//+ "\r\n" + $("#append-test").text(),
 		htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
 		htmlDecode: "style,script,iframe",  // you can filter tags decode
 		//toc             : false,

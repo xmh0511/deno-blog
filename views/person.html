@@ -40,11 +40,13 @@
 			, done: function (res) {
 				//上传完毕回调
 				console.log(res);
-				if (res.length > 0) {
-					const result = res[0];
+				if (res.success === 1) {
+					const result = res;
 					const path = result.url;
 					$("#avatar").attr("src", path);
 					$("#avatar").attr("data-url", path);
+				}else{
+					alert(res.message);
 				}
 			}
 			, error: function () {

@@ -210,7 +210,7 @@ export namespace HomeCtr {
 					ctx.response.body = { code: 400, msg: "无效请求" };
 				}
 			} catch (e) {
-				ctx.response.body = { code: 400, msg: e };
+				ctx.response.body = { code: 500, msg: "服务器错误" };
 			}
 		});
 	}
@@ -246,10 +246,11 @@ export namespace HomeCtr {
 					}
 					// console.log(r.lastInsertId);
 				} else {
-					ctx.response.body = { code: 404, msg: "无效请求" };
+					ctx.response.body = { code: 500, msg: "无效请求" };
 				}
 			} catch (e) {
 				//console.log(e);
+				ctx.response.body = { code: 500, msg: "服务器错误" };
 			}
 		});
 	}
@@ -299,7 +300,7 @@ export namespace HomeCtr {
 					ctx.response.body = { code: 200, msg: "ok" };
 				} catch (e) {
 					//console.log(e);
-					ctx.response.body = { code: 400, msg: "error" };
+					ctx.response.body = { code: 500, msg: "服务器错误" };
 				}
 			},
 		);
@@ -389,7 +390,7 @@ export namespace HomeCtr {
 				}
 			} catch (e) {
 				console.log("line 292 ", e);
-				ctx.render("404.html", { code: 404, msg: e, baseUrl });
+				ctx.render("404.html", { code: 404, msg: "服务器错误", baseUrl });
 				ctx.response.status = 500;
 			}
 		});
@@ -444,7 +445,7 @@ export namespace HomeCtr {
 					emptyString
 				});
 			} catch (e) {
-				await ctx.render("404.html", { code: 404, msg: e, baseUrl });
+				await ctx.render("404.html", { code: 404, msg: "服务器错误", baseUrl });
 			}
 		});
 	}
@@ -478,7 +479,7 @@ export namespace HomeCtr {
 					ctx.response.status = 404;
 				}
 			} catch (e) {
-				ctx.render("404.html", { code: 404, msg: e, baseUrl });
+				ctx.render("404.html", { code: 404, msg: "服务器错误", baseUrl });
 			}
 		});
 	}
@@ -522,7 +523,7 @@ export namespace HomeCtr {
 				}
 			} catch (e) {
 				console.log(e);
-				ctx.response.body = { code: 500, msg: e };
+				ctx.response.body = { code: 500, msg: "服务器错误" };
 			}
 		});
 	}
@@ -551,7 +552,7 @@ export namespace HomeCtr {
 					ctx.response.body = { code: 400, msg: "不存在该文章" };
 				}
 			} catch (e) {
-				ctx.response.body = { code: 400, msg: e };
+				ctx.response.body = { code: 500, msg: "服务器错误" };
 			}
 		});
 	}
@@ -589,7 +590,7 @@ export namespace HomeCtr {
 						ctx.response.body = { code: 400, msg: "评论失败" };
 					}
 				} catch (e) {
-					ctx.response.body = { code: 500, msg: e };
+					ctx.response.body = { code: 500, msg: "服务器错误" };
 				}
 			},
 		);
@@ -612,7 +613,7 @@ export namespace HomeCtr {
 						ctx.response.body = { code: 400, msg: "删除失败" };
 					}
 				} catch (e) {
-					ctx.response.body = { code: 400, msg: e };
+					ctx.response.body = { code: 500, msg: "服务器错误" };
 				}
 			},
 		);
@@ -633,7 +634,7 @@ export namespace HomeCtr {
 					ctx.response.status = 400;
 				}
 			} catch (e) {
-				ctx.render("404.html", { code: 400, msg: e, baseUrl });
+				ctx.render("404.html", { code: 400, msg: "服务器错误", baseUrl });
 				ctx.response.status = 500;
 			}
 		});
@@ -668,7 +669,7 @@ export namespace HomeCtr {
 						ctx.response.status = 400;
 					}
 				} catch (e) {
-					ctx.response.body = { code: 400, msg: e };
+					ctx.response.body = { code: 400, msg: "服务器错误" };
 					ctx.response.status = 500;
 				}
 			},
@@ -686,7 +687,7 @@ export namespace HomeCtr {
 				//console.log(userInfo);
 				ctx.render("person.html", { info: userInfo[0], emptyString });
 			} catch (e) {
-				ctx.render("404.html", { code: 400, msg: e });
+				ctx.render("404.html", { code: 400, msg: "服务器错误" });
 				ctx.response.status = 500;
 			}
 		})
@@ -713,7 +714,7 @@ export namespace HomeCtr {
 					ctx.response.body = { code: 200, msg: "修改成功" }
 				}
 			} catch (e) {
-				ctx.response.body = { code: 500, msg: e }
+				ctx.response.body = { code: 500, msg: "服务器错误" }
 			}
 		})
 	}
